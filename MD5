@@ -1,0 +1,15 @@
+d138937afcbdedfc51cb36631fe2ada3 *DESCRIPTION
+0f93f317172a122cb893cd170fe89920 *NAMESPACE
+64facf09ea45c6bd5ea0b6c9ea49636f *NEWS
+30e2156f8e5c33f06a99fbb5eb5100c9 *R/myepisodes.R
+69f36b2067244faf5b9d934380f78d3b *README.md
+e11e8af88a623a31249b0735033107ec *inst/test_data/mock_mylist.xml
+0d5f0a1256d9fc5b559c8237ceb4239b *inst/tests/test_myepisodes.r
+14698f5b361b1d2c22853d4832db31e7 *man/ep_number.Rd
+e68ca728264c285d2da1927ed41179f1 *man/myepisodes.Rd
+a1bcfba9f66878ed0088379f11825897 *man/myepisodes_feed_url.Rd
+4a5184867f3230d58fe5cf4f4b8ec0ca *man/show_info_from_xml.Rd
+292f97f81679b88e890ee84bb541c661 *man/shows_from_myepisodes.Rd
+e1451698eca7ddcf24f3b7f4b130b89f *man/shows_from_myepisodes_feed.Rd
+08750da150589c9d147b43943618825c *man/summary_of_shows.Rd
+aa9cea2ebb36cac7e6a6dd0e005c339b *man/xml_shows_from_myepisodes_feed.Rd
