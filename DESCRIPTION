@@ -1,14 +1,15 @@
 Package: myepisodes
-Version: 1.0.0
+Version: 1.1.1
 Date: 2012-02-17
 Title: MyEpisodes RSS/API functions
 Author: Matt Malin <email@mattmalin.co.uk>
 Maintainer: Matt Malin <email@mattmalin.co.uk>
-Description: MyEpisodes stats and useful functions Currently just for
-        show info from a list, see \link{shows_from_myepisodes}
+Description: Useful functions for accessing MyEpisodes feeds and
+        episode information as well as other tv episode related actions
+        through www.myepisodes.com
 Imports: XML
 License: GPL (>= 2)
 Collate: 'myepisodes.R'
-Packaged: 2012-02-18 13:53:31 UTC; Matt
+Packaged: 2012-07-02 21:47:40 UTC; Matt
 Repository: CRAN
-Date/Publication: 2012-02-18 15:14:46
+Date/Publication: 2012-07-03 06:48:30

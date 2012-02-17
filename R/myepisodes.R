@@ -89,7 +89,7 @@ shows_from_myepisodes <- function(uid, pwdmd5, feed = "mylist", onlyunacquired =
 #' @param myepisodes_feed_url path to a MyEpisodes RSS feed
 #' @seealso \link{show_info_from_xml},  \link{myepisodes_feed_url}, 
 #' \link{shows_from_myepisodes_feed}
-#' @return XMLNodeList with all \"item\"s from feed, corresponding to episodes
+#' @return XMLNodeList with all "item"s from feed, corresponding to episodes
 #' @author Matt Malin <\email{email@@mattmalin.co.uk}>
 #' @export
 #' @examples \dontrun{xml_shows_from_myepisodes_feed(myepisodes_feed_url("user", "password"))}
@@ -97,7 +97,7 @@ shows_from_myepisodes <- function(uid, pwdmd5, feed = "mylist", onlyunacquired =
 #'   xml_shows_from_myepisodes_feed(mock_feed_url)
 xml_shows_from_myepisodes_feed <- function(myepisodes_feed_url) {
   if(length(getXMLErrors(myepisodes_feed_url)) == 0) {
-  myepisodes_feed <- xmlTreeParse(myepisodes_feed_url, getDTD = FALSE)
+    myepisodes_feed <- xmlTreeParse(myepisodes_feed_url, getDTD = FALSE)
   } else {
     stop("feed is not valid, check user/pass, feed type or if MyEpisodes.com is down.")
   }
@@ -115,7 +115,7 @@ xml_shows_from_myepisodes_feed <- function(myepisodes_feed_url) {
 #' of individual items in MyEpisodes feeds, returns a list for a given show
 #' containing show_name, season, ep, ep_title, and date_aired.
 #'
-#' @param xml_show XMLNode of \"item\" child from MyEpisodes feed
+#' @param xml_show XMLNode of "item" child from MyEpisodes feed
 #' @return list for individual show
 #' @author Matt Malin <\email{email@@mattmalin.co.uk}>
 #' @export
@@ -139,12 +139,16 @@ show_info_from_xml <- function(xml_show) {
   ep_title   <- gsub(myepisodes_grep_pattern, "\\4", xml_title)
   date_aired <- gsub(myepisodes_grep_pattern, "\\5", xml_title)
   
+  guid <- xmlValue(xml_show[["guid"]])
+  showid <- strsplit(guid, split = "-")[[1]][1]
+  
   return(list(
     show_name = show_name,
 	season = season,
 	ep = ep,
 	ep_title = ep_title,
-	date_aired = date_aired
+	date_aired = date_aired,
+	showid = showid
 	)
   )
 }
@@ -173,7 +177,7 @@ ep_number <- function(show_item, max_length = 2) {
 #' Display summary of all the tv episodes in a list
 #'
 #' Given a list of shows (in form from \link{show_info_from_xml}) will display
-#' a summary, displaying each episode of the form \"show_name - SxNN\"
+#' a summary, displaying each episode of the form "show_name - SxNN"
 #'
 #' @param shows list of shows as in form from \link{show_info_from_xml}
 #' @return character vector summarising each show
@@ -185,4 +189,76 @@ ep_number <- function(show_item, max_length = 2) {
 #'   summary_of_shows(mock_shows)
 summary_of_shows <- function(shows) {
   as.character(sapply(shows, FUN = function(item) paste(item$show_name, " - ", ep_number(item), sep = "")))
+}
+
+#' Marks on MyEpisodes if an episode has been watched/acquired (through browser)
+#'
+#' Given a tv episode (list as from \link{show_info_from_xml}) this marks
+#' on MyEpisodes if a show has been watched or acquired. Given the lack of a
+#' proper MyEpisodes API and until a better solution is implemented here, it 
+#' currently loads a browser at the appropriate update link.
+#'
+#' @param tv_episode a show_info list from \link{show_info_from_xml} or similar
+#' @param seen TRUE/FALSE whether to also mark episode as seen, just marks 
+#' acquired if FALSE
+#' @return character of the URL for the myepisodes update link, should also load
+#' link in a browser to get the desired behaviour, assuming user is logged in to 
+#' myepisodes.
+#' @author Matt Malin <\email{email@@mattmalin.co.uk}>
+update_episode <- function(tv_episode, seen = TRUE) {
+  # marks episode as acquired or seen (based on if seen = TRUE/FALSE)
+  myepisodes_update_url <- paste(
+    "http://www.myepisodes.com/myshows.php?action=Update&showid=",
+    tv_episode$showid,
+	"&season=",
+	tv_episode$season,
+	"&episode=",
+	tv_episode$ep,
+	"&seen=",
+	ifelse(isTRUE(seen), 1, 0),
+	sep = "")
+  browseURL(myepisodes_update_url)
+  return(myepisodes_update_url)
+}
+
+#' Marks on MyEpisodes if an episode has been watched (through browser)
+#'
+#' Given a tv episode (list as from \link{show_info_from_xml}) this marks
+#' on MyEpisodes if a show has been watched. Given the lack of a
+#' proper MyEpisodes API and until a better solution is implemented here, it 
+#' currently loads a browser at the appropriate update link.
+#'
+#' @param tv_episode a show_info list from \link{show_info_from_xml} or similar
+#' @return character of the URL for the myepisodes update link, should also load
+#' link in a browser to get the desired behaviour, assuming user is logged in to 
+#' myepisodes.
+#' @author Matt Malin <\email{email@@mattmalin.co.uk}>
+#' @export
+#' @examples \dontrun{
+#'   mock_feed_url <- file.path(system.file(package = "myepisodes"), "test_data/mock_mylist.xml")
+#'   mock_shows <- shows_from_myepisodes_feed(mock_feed_url)
+#'   mark_episode_as_watched(mock_shows[[1]])}
+mark_episode_as_watched <- function(tv_episode) {
+  update_episode(tv_episode, seen = TRUE)
+}
+
+#' Marks on MyEpisodes if an episode has been acquired (through browser)
+#'
+#' Given a tv episode (list as from \link{show_info_from_xml}) this marks
+#' on MyEpisodes if a show has been acquired. Given the lack of a
+#' proper MyEpisodes API and until a better solution is implemented here, it 
+#' currently loads a browser at the appropriate update link.
+#'
+#' @param tv_episode a show_info list from \link{show_info_from_xml} or similar
+#' @return character of the URL for the myepisodes update link, should also load
+#' link in a browser to get the desired behaviour, assuming user is logged in to 
+#' myepisodes.
+#' @author Matt Malin <\email{email@@mattmalin.co.uk}>
+#' @export
+#' @examples \dontrun{
+#'   mock_feed_url <- file.path(system.file(package = "myepisodes"), "test_data/mock_mylist.xml")
+#'   mock_shows <- shows_from_myepisodes_feed(mock_feed_url)
+#'   mark_episode_as_acquired(mock_shows[[1]])}
+mark_episode_as_acquired <- function(tv_episode) {
+  update_episode(tv_episode, seen = FALSE)
 }
